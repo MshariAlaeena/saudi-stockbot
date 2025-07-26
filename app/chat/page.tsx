@@ -29,7 +29,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { DynamicChart } from "@/components/dynamic-chart"
 import { apiClient } from "@/lib/api-config"
 
@@ -280,6 +279,7 @@ export default function ChatPage() {
       return response
     } catch (error) {
       console.error("Error sending chat message:", error)
+
       return {
         data: {
           answer: "I'm sorry, I'm having trouble connecting to the server right now. Please try again later.",
@@ -348,6 +348,7 @@ export default function ChatPage() {
 
     try {
       const { symbol, companyName } = extractSymbolFromMessage(currentInput)
+
       const response = await sendChatMessage(updatedMessages)
 
       setMessages((prev) => {
@@ -582,6 +583,7 @@ export default function ChatPage() {
           </CardContent>
         </Card>
 
+        {/* Sector Overview - Collapsible */}
         <Card className="bg-white shadow-sm border-0 rounded-xl">
           <CardHeader
             className="cursor-pointer hover:bg-gray-50 transition-colors rounded-t-xl"
@@ -702,11 +704,15 @@ export default function ChatPage() {
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="symbol">Stock Symbol</Label>
+                      <label htmlFor="symbol" className="block text-sm font-medium text-gray-700">
+                        Stock Symbol
+                      </label>
                       <Input id="symbol" placeholder="e.g., ARAMCO" className="mt-1" />
                     </div>
                     <div>
-                      <Label htmlFor="price">Alert Price (SAR)</Label>
+                      <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                        Alert Price (SAR)
+                      </label>
                       <Input id="price" type="number" placeholder="e.g., 35.00" className="mt-1" />
                     </div>
                     <Button className="w-full bg-teal-500 hover:bg-teal-600">Set Alert</Button>

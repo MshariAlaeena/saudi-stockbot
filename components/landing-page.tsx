@@ -53,19 +53,19 @@ export default function LandingPage() {
 
   const testimonials = [
     {
-      name: "Ahmed",
+      name: "Ahmed Al-Rashid",
       role: "Portfolio Manager",
       content: "Saudi StockBot has revolutionized how I analyze the market. The AI insights are incredibly accurate.",
       rating: 5,
     },
     {
-      name: "Fatima",
+      name: "Fatima Al-Zahra",
       role: "Day Trader",
       content: "The real-time alerts and analysis have helped me make better trading decisions consistently.",
       rating: 5,
     },
     {
-      name: "Turki",
+      name: "Mohammed bin Salman",
       role: "Investment Advisor",
       content: "An essential tool for anyone serious about Saudi stock market investing. Highly recommended.",
       rating: 5,

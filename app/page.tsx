@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import LandingPage from "@/components/landing-page"
 
+// Mock data
 const mockMessages = [
   {
     id: 1,
@@ -56,6 +56,7 @@ export default function MainHome() {
 function DesktopSidebar() {
   return (
     <div className="space-y-6">
+      {/* Sector Dashboard */}
       <Card className="bg-white shadow-sm border-0 rounded-xl">
         <CardHeader>
           <h3 className="font-semibold text-gray-900 flex items-center">
@@ -64,10 +65,11 @@ function DesktopSidebar() {
           </h3>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-3"></div>
+          <div className="grid grid-cols-2 gap-3">{/* Sector data rendering logic here */}</div>
         </CardContent>
       </Card>
 
+      {/* Gainers/Losers */}
       <Card className="bg-white shadow-sm border-0 rounded-xl">
         <CardHeader>
           <h3 className="font-semibold text-gray-900 flex items-center">
@@ -76,10 +78,11 @@ function DesktopSidebar() {
           </h3>
         </CardHeader>
         <CardContent>
-          <div className="flex overflow-x-auto space-x-2 pb-2"></div>
+          <div className="flex overflow-x-auto space-x-2 pb-2">{/* Gainers/Losers rendering logic here */}</div>
         </CardContent>
       </Card>
 
+      {/* Watch List */}
       <Card className="bg-white shadow-sm border-0 rounded-xl">
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -99,11 +102,15 @@ function DesktopSidebar() {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="symbol">Stock Symbol</Label>
+                    <label htmlFor="symbol" className="block text-sm font-medium text-gray-700">
+                      Stock Symbol
+                    </label>
                     <Input id="symbol" placeholder="e.g., ARAMCO" className="mt-1" />
                   </div>
                   <div>
-                    <Label htmlFor="price">Alert Price (SAR)</Label>
+                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                      Alert Price (SAR)
+                    </label>
                     <Input id="price" type="number" placeholder="e.g., 35.00" className="mt-1" />
                   </div>
                   <Button className="w-full bg-teal-500 hover:bg-teal-600">Set Alert</Button>
@@ -113,7 +120,7 @@ function DesktopSidebar() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3"></div>
+          <div className="space-y-3">{/* Watch list rendering logic here */}</div>
         </CardContent>
       </Card>
     </div>
