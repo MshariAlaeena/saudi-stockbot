@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { TrendingUp, TrendingDown, BarChart3, LineChartIcon } from "lucide-react"
+import { TrendingUp, TrendingDown, BarChart3, LineChartIcon, MessageCircle } from "lucide-react"
 
 interface StockData {
   date: string
@@ -60,9 +60,16 @@ interface DynamicChartProps {
   symbol?: string
   companyName?: string
   onLoadDetailedChart?: (companyId: number, tadawulId: string) => void
+  onAskAboutChart?: (context: any) => void
 }
 
-export function DynamicChart({ response, symbol, companyName, onLoadDetailedChart }: DynamicChartProps) {
+export function DynamicChart({
+  response,
+  symbol,
+  companyName,
+  onLoadDetailedChart,
+  onAskAboutChart,
+}: DynamicChartProps) {
   const { data } = response
 
   const processedData = useMemo(() => {
@@ -97,6 +104,49 @@ export function DynamicChart({ response, symbol, companyName, onLoadDetailedChar
     return null
   }, [data.stocks, data.data, data])
 
+  const handleAskAboutChart = () => {
+    if (!onAskAboutChart) return
+
+    let context
+    if (data.chart === "search_company_stocks" && companyInfo) {
+      context = {
+        chart: "search_company_stocks",
+        stocks: {
+          tadawulID: companyInfo.tadawulID,
+          companyID: companyInfo.companyID,
+          companyName: companyInfo.companyName,
+          sector: companyInfo.sector,
+          acrynomName: companyInfo.acrynomName,
+          argaamID: companyInfo.argaamID,
+          companyNameAr: companyInfo.companyNameAr,
+          sectorAr: companyInfo.sectorAr,
+          price: companyInfo.price,
+          change: companyInfo.change,
+          changePercent: companyInfo.changePercent,
+        },
+      }
+    } else if (data.chart === "detailed_company_stock_prices" && processedData.length > 0) {
+      context = {
+        chart: "detailed_company_stock_prices",
+        stocks: processedData.map((item) => ({
+          date: item.fullDate,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close,
+          volume: item.volume,
+        })),
+      }
+    } else {
+      context = {
+        chart: data.chart,
+        stocks: data.stocks || data.data || data,
+      }
+    }
+
+    onAskAboutChart(context)
+  }
+
   if (!data.chart) {
     return null
   }
@@ -129,6 +179,19 @@ export function DynamicChart({ response, symbol, companyName, onLoadDetailedChar
               </div>
             </div>
           </div>
+          {onAskAboutChart && (
+            <div className="flex justify-end mt-2">
+              <Button
+                onClick={handleAskAboutChart}
+                variant="outline"
+                size="sm"
+                className="text-teal-600 border-teal-200 hover:bg-teal-50 rounded-lg bg-transparent"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Ask about this chart
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -409,6 +472,19 @@ export function DynamicChart({ response, symbol, companyName, onLoadDetailedChar
             </div>
           </div>
         </div>
+        {onAskAboutChart && (
+          <div className="flex justify-end mt-2">
+            <Button
+              onClick={handleAskAboutChart}
+              variant="outline"
+              size="sm"
+              className="text-teal-600 border-teal-200 hover:bg-teal-50 rounded-lg bg-transparent"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Ask about this chart
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         {renderChart()}

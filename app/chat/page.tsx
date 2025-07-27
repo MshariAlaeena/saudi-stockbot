@@ -22,6 +22,8 @@ import {
   ArrowLeft,
   Loader2,
   RefreshCw,
+  Paperclip,
+  AlertCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,6 +49,7 @@ interface ChatApiRequest {
     role: "user" | "assistant"
     content: string
   }>
+  context?: any
 }
 
 interface ChatResponse {
@@ -128,6 +131,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [dashboardData, setDashboardData] = useState<DashboardStock[]>([])
   const [isDashboardLoading, setIsDashboardLoading] = useState(false)
+  const [chartContext, setChartContext] = useState<any>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -262,6 +266,23 @@ export default function ChatPage() {
     }
   }
 
+  const handleAskAboutChart = (context: any) => {
+    setChartContext(context)
+    setShowChart(false)
+
+    const assistantMessage: ChatMessage = {
+      id: Date.now(),
+      role: "assistant",
+      content: "What would you like to know about this chart?",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    }
+    setMessages((prev) => [...prev, assistantMessage])
+  }
+
+  const handleCancelChartAttachment = () => {
+    setChartContext(null)
+  }
+
   const sendChatMessage = async (conversationHistory: ChatMessage[]): Promise<ChatResponse> => {
     try {
       const apiMessages = conversationHistory
@@ -273,9 +294,13 @@ export default function ChatPage() {
 
       const requestData: ChatApiRequest = {
         messages: apiMessages,
+        context: chartContext,
       }
 
       const response = await apiClient.post<ChatResponse>("CHAT", requestData)
+
+      setChartContext(null)
+
       return response
     } catch (error) {
       console.error("Error sending chat message:", error)
@@ -391,6 +416,7 @@ export default function ChatPage() {
     setMessages(initialMessages)
     setShowChart(false)
     setCurrentChartData(null)
+    setChartContext(null)
   }
 
   const gainers = Array.isArray(dashboardData)
@@ -400,6 +426,31 @@ export default function ChatPage() {
     ? dashboardData.filter((stock) => stock.percentageGained < 0).slice(0, 5)
     : []
   const topMovers = [...gainers.slice(0, 3), ...losers.slice(0, 2)]
+
+  const getChartAttachmentInfo = () => {
+    if (!chartContext) return null
+
+    if (chartContext.chart === "search_company_stocks") {
+      return {
+        type: "Company Info",
+        title: chartContext.stocks?.companyName || "Company Data",
+        subtitle: `${chartContext.stocks?.acrynomName || ""} • ${chartContext.stocks?.sector || ""}`,
+      }
+    } else if (chartContext.chart === "detailed_company_stock_prices") {
+      const dataPoints = Array.isArray(chartContext.stocks) ? chartContext.stocks.length : 0
+      return {
+        type: "Price History",
+        title: "Stock Price Data",
+        subtitle: `${dataPoints} data points`,
+      }
+    }
+
+    return {
+      type: "Chart Data",
+      title: "Chart Information",
+      subtitle: "Attached to your message",
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -492,23 +543,79 @@ export default function ChatPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
-              <div className="flex space-x-3 max-w-4xl mx-auto">
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask about Saudi stocks... (e.g., 'Show me ARAMCO stock prices')"
-                  className="flex-1 border-gray-200 focus:border-teal-300 focus:ring-teal-200 rounded-xl h-12 text-base"
-                  onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
-                  disabled={isLoading}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={isLoading || !inputValue.trim()}
-                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-6 h-12 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                </Button>
+            <div className="flex-shrink-0 bg-white border-t border-gray-200">
+              {chartContext && (
+                <div className="px-6 py-3 border-b border-gray-100 bg-teal-50">
+                  <div className="max-w-4xl mx-auto">
+                    <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm border border-teal-200">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-teal-100 rounded-lg">
+                          <Paperclip className="w-4 h-4 text-teal-600" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium text-gray-900">{getChartAttachmentInfo()?.title}</span>
+                            <Badge className="bg-teal-100 text-teal-700 text-xs">
+                              {getChartAttachmentInfo()?.type}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{getChartAttachmentInfo()?.subtitle}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1 text-xs text-teal-600">
+                          <AlertCircle className="w-3 h-3" />
+                          <span>Chart attached</span>
+                        </div>
+                        <Button
+                          onClick={handleCancelChartAttachment}
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 hover:bg-red-100 text-gray-400 hover:text-red-600 rounded-full"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-6">
+                <div className="flex space-x-3 max-w-4xl mx-auto">
+                  <div className="flex-1 relative">
+                    <Input
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder={
+                        chartContext
+                          ? "Ask about the attached chart..."
+                          : "Ask about Saudi stocks... (e.g., 'Show me ARAMCO stock prices')"
+                      }
+                      className={`border-gray-200 focus:border-teal-300 focus:ring-teal-200 rounded-xl h-12 text-base pr-10 ${
+                        chartContext ? "border-teal-300 bg-teal-50/30" : ""
+                      }`}
+                      onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
+                      disabled={isLoading}
+                    />
+                    {chartContext && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Paperclip className="w-4 h-4 text-teal-500" />
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={isLoading || !inputValue.trim()}
+                    className={`rounded-xl px-6 h-12 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      chartContext
+                        ? "bg-teal-600 hover:bg-teal-700 text-white shadow-lg"
+                        : "bg-teal-500 hover:bg-teal-600 text-white"
+                    }`}
+                  >
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -546,6 +653,7 @@ export default function ChatPage() {
                       symbol={currentSymbol}
                       companyName={currentCompanyName}
                       onLoadDetailedChart={handleLoadDetailedChart}
+                      onAskAboutChart={handleAskAboutChart}
                     />
                   </div>
                 )}
@@ -583,7 +691,6 @@ export default function ChatPage() {
           </CardContent>
         </Card>
 
-        {/* Sector Overview - Collapsible */}
         <Card className="bg-white shadow-sm border-0 rounded-xl">
           <CardHeader
             className="cursor-pointer hover:bg-gray-50 transition-colors rounded-t-xl"
