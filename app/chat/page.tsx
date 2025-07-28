@@ -133,6 +133,7 @@ export default function ChatPage() {
   const [isDashboardLoading, setIsDashboardLoading] = useState(false)
   const [chartContext, setChartContext] = useState<any>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -149,6 +150,24 @@ export default function ChatPage() {
 
   useEffect(() => {
     loadDashboardData()
+  }, [])
+
+  useEffect(() => {
+    if (inputRef.current && !isLoading) {
+      inputRef.current.focus()
+    }
+  }, [messages, chartContext, isLoading])
+
+  useEffect(() => {
+    const handleGlobalKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "/" && e.target !== inputRef.current) {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleGlobalKeyPress)
+    return () => document.removeEventListener("keydown", handleGlobalKeyPress)
   }, [])
 
   const loadDashboardData = async () => {
@@ -585,6 +604,7 @@ export default function ChatPage() {
                 <div className="flex space-x-3 max-w-4xl mx-auto">
                   <div className="flex-1 relative">
                     <Input
+                      ref={inputRef}
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder={
