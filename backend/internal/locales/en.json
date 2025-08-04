@@ -1,0 +1,12 @@
+{
+    "system_is_up_and_running": "System is Up and Running!",
+    "documents_fetched_successfully": "Documents fetched successfully",
+    "request_is_invalid": "Request is invalid",
+    "an_error_occurred_while_processing_your_request": "An error occurred while processing your request",
+    "chat_message_sent": "Chat message sent successfully",
+    "file_uploaded_successfully": "File uploaded successfully",
+    "document_deleted_successfully": "Document deleted successfully",
+    "content_deleted_successfully": "Content deleted successfully",
+    "dashboard_data_fetched_successfully": "Dashboard data fetched successfully",
+    "slip_reported_successfully": "Slip reported successfully"
+}

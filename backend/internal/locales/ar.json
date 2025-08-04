@@ -1,0 +1,12 @@
+{
+    "system_is_up_and_running": "النظام يعمل بشكل جيد",
+    "documents_fetched_successfully": "تم استعادة المستندات بنجاح",
+    "request_is_invalid": "الطلب غير صالح",
+    "an_error_occurred_while_processing_your_request": "حدث خطأ أثناء معالجة الطلب",
+    "chat_message_sent": "تم إرسال الرسالة بنجاح",
+    "file_uploaded_successfully": "تم رفع الملف بنجاح",
+    "document_deleted_successfully": "تم حذف المستند بنجاح",
+    "content_deleted_successfully": "تم حذف المحتوى بنجاح",
+    "dashboard_data_fetched_successfully": "تم استعادة بيانات اللوحة بنجاح",
+    "slip_reported_successfully": "تم الإبلاغ بنجاح"
+}
