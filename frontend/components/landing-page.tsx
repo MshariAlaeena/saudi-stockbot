@@ -32,7 +32,7 @@ export default function LandingPage() {
       setPriceChange(change)
     }, 2000)
 
-    const statsTargets = [10000, 500, 99.9, 24]
+    const statsTargets = [10000, 200, 99.9, 24]
     const statsInterval = setInterval(() => {
       setAnimatedStats(prev => prev.map((current, index) => {
         const target = statsTargets[index]
