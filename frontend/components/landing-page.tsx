@@ -281,10 +281,6 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-4 shadow-2xl animate-bounce">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
-
                 <div className="absolute -top-4 -left-4 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-lg p-3 shadow-xl">
                   <div className="flex items-center space-x-2">
                     <SARSymbol className="w-4 h-4" color="white" />
